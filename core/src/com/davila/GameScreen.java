@@ -1,11 +1,13 @@
 package com.davila;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -20,6 +22,8 @@ public class GameScreen implements Screen {
 
     private static final float WORLD_WIDTH = 800;
     private static final float WORLD_HEIGHT = 600;
+    private static final int XGUTTER = 10;
+    private static final int YGUTTER = 35;
 
     //Object that allows us to draw all our graphics
     private SpriteBatch spriteBatch;
@@ -34,11 +38,14 @@ public class GameScreen implements Screen {
     //zoom in/out? Keep everything scaled?
     private Viewport viewport;
 
-    //Textures
-    private Texture emptyTile;
-    private Texture questionTile;
-    private Texture bombTile;
-    private Texture emptyFloor;
+    GameBoard board = new GameBoard();
+
+    //(x,y) of last mouse click
+    private int mouseX = -10;
+    private int mouseY = -10;
+
+    //Create temporary, ugly font
+    BitmapFont tempFont = new BitmapFont();
 
     @Override
     public void show() {
@@ -53,18 +60,36 @@ public class GameScreen implements Screen {
 
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setAutoShapeType(true); //???, I just know that this was the solution to an annoying problem
+    }
 
-        //load all textures
-        emptyTile = new Texture("img.png");
+    public void handleClick() {
+
+        if(Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+            mouseX = Gdx.input.getX();
+            mouseY = Gdx.input.getY();
+            board.handleClick(mouseX, mouseY);
+        }
     }
 
     @Override
     public void render(float delta) {
+        //clear screen
         clearScreen();
+
+        //handle player input
+        handleClick();
+
+        //A.I. updates
 
         //all texture drawing must happen between begin() and end()
         spriteBatch.begin();
-        spriteBatch.draw(emptyTile, 300, 300);
+        board.draw(spriteBatch);
+        tempFont.draw(spriteBatch, "Clicked at (" + mouseX + ", " + mouseY + ")",
+                400, 100);
+        tempFont.draw(spriteBatch, "row: " + ((mouseY-10)/25),
+                400, 80);
+        tempFont.draw(spriteBatch, "col: " + ((mouseX-10)/25),
+                400, 60);
         spriteBatch.end();
     }
 
