@@ -55,6 +55,54 @@ public class GameBoard {
                 initBoardNumbers();
             }
             //if tile pressed on is empty (clear large space)
+            if(board[rowClicked][colClicked] == 0) {
+                clearLargeSpace(rowClicked, colClicked);
+            }
+        }
+    }
+
+    private void clearLargeSpace(int row, int col) {
+        //top
+        if(isValidLoc(row-1, col)) {
+            if(board[row-1][col] == 10) {
+                System.out.println("cleared above");
+                board[row-1][col] = 0;
+                clearLargeSpace(row-1, col);
+            }
+            else {
+                System.out.println("num above");
+                board[row-1][col] = bombsAroundLoc(row-1, col) % 10;
+            }
+        }
+        //right
+        if(isValidLoc(row, col+1)) {
+            if(board[row][col+1] == 10) {
+                board[row][col+1] = 0;
+                clearLargeSpace(row, col+1);
+            }
+            else {
+                board[row][col+1] = bombsAroundLoc(row, col+1) % 10;
+            }
+        }
+        //bottom
+        if(isValidLoc(row+1, col)) {
+            if(board[row+1][col] == 10) {
+                board[row+1][col] = 0;
+                clearLargeSpace(row+1, col);
+            }
+            else {
+                board[row+1][col] = bombsAroundLoc(row+1, col) % 10;
+            }
+        }
+        //left
+        if(isValidLoc(row, col-1)) {
+            if(board[row][col-1] == 10) {
+                board[row][col-1] = 0;
+                clearLargeSpace(row, col-1);
+            }
+            else {
+                board[row][col-1] = bombsAroundLoc(row, col-1) % 10;
+            }
         }
     }
 
